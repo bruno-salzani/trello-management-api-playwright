@@ -1,0 +1,57 @@
+name: Mutation Score
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+
+permissions:
+  contents: write
+
+jobs:
+  mutation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run mutation testing (Stryker)
+        run: npm run mutation
+        env:
+          TRELLO_KEY: ${{ secrets.TRELLO_KEY }}
+          TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
+
+      - name: Extract mutation score and prepare badge
+        run: |
+          node -e "const fs=require('fs');const path=require('path');function findJson(dir){if(!fs.existsSync(dir))return null;const files=fs.readdirSync(dir,{withFileTypes:true});for(const f of files){const p=path.join(dir,f.name);if(f.isFile()&&f.name.endsWith('.json')){try{const j=JSON.parse(fs.readFileSync(p,'utf8'));if(typeof j.mutationScore==='number')return j;}catch{}}if(f.isDirectory()){const r=findJson(p);if(r)return r}}return null}const j=findJson(process.cwd());if(!j){console.log('No mutation report JSON found');process.exit(0)}const score=j.mutationScore;const color=score>=80?'brightgreen':score>=60?'yellowgreen':score>=40?'orange':'red';const text=Math.round(score)+'%';const svg=`<svg xmlns='http://www.w3.org/2000/svg' width='150' height='20' role='img' aria-label='Mutation: ${text}'><linearGradient id='b' x2='0' y2='100%'><stop offset='0' stop-color='#bbb' stop-opacity='.1'/><stop offset='1' stop-opacity='.1'/></linearGradient><mask id='a'><rect width='150' height='20' rx='3' fill='#fff'/></mask><g mask='url(#a)'><rect width='85' height='20' fill='#555'/><rect x='85' width='65' height='20' fill='${color}'/><rect width='150' height='20' fill='url(#b)'/></g><g aria-hidden='true' fill='#fff' text-anchor='middle' font-family='Verdana,Geneva,DejaVu Sans,sans-serif' text-rendering='geometricPrecision' font-size='110'><text x='435' y='150' transform='scale(.1)' fill='#fff'>Mutation</text><text x='1165' y='150' transform='scale(.1)' fill='#fff'>${text}</text></g></svg>`;fs.mkdirSync('assets/badges',{recursive:true});fs.writeFileSync('assets/badges/mutation.svg',svg);console.log('Mutation score:',score);"
+
+      - name: Commit badge
+        run: |
+          if [ -f assets/badges/mutation.svg ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add assets/badges/mutation.svg
+            git commit -m "chore: update mutation badge [skip ci]" || echo "No changes to commit"
+            git push
+          fi
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "# Mutation Testing" >> $GITHUB_STEP_SUMMARY
+          if [ -f assets/badges/mutation.svg ]; then
+            echo "![Mutation Badge](assets/badges/mutation.svg)" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Relatórios HTML/Text disponíveis nos artefatos do job (Stryker)." >> $GITHUB_STEP_SUMMARY

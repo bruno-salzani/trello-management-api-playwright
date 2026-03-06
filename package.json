@@ -1,0 +1,63 @@
+{
+  "name": "trello-management-api-playwright",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "author": "Bruno Salzani",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "test": "playwright test",
+    "typecheck": "tsc --noEmit",
+    "test:functional": "playwright test --project=functional",
+    "test:functional:slow": "cross-env SLA_MS_CREATE_BOARD=4000 SLA_MS_GET_BOARD=3500 SLA_MS_DELETE_BOARD=3500 SLA_MS_CREATE_LIST=3000 SLA_MS_ARCHIVE_LIST=3000 SLA_MS_CREATE_CARD=3500 SLA_MS_MOVE_CARD=3500 SLA_MS_COMMENT_CARD=3000 playwright test --project=functional",
+    "test:negative": "playwright test --project=negative",
+    "test:negative:slow": "cross-env SLA_MS=4000 playwright test --project=negative",
+    "test:perf": "cross-env ENABLE_PERF=1 playwright test --project=perf",
+    "ci": "npm run typecheck && npm run test:functional && npm run test:negative",
+    "test:smoke:boards": "playwright test --project=functional --grep \"\\\\[BOARDS\\\\]\"",
+    "test:smoke:cards": "playwright test --project=functional --grep \"\\\\[CARDS\\\\]\"",
+    "token:revoke": "ts-node scripts/revoke-token.ts",
+    "quick-check": "ts-node scripts/quick-check.ts",
+    "test:report": "npx playwright show-report",
+    "flaky:analyze": "node scripts/analyze-flaky.cjs",
+    "drift": "ts-node scripts/drift-check.ts",
+    "metrics:export": "ts-node scripts/export-metrics.ts",
+    "metrics:push": "ts-node scripts/export-metrics.ts",
+    "security:openapi:lint": "ts-node scripts/openapi-security-lint.ts",
+    "pact:generate": "ts-node scripts/pact-generate.ts",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky",
+    "mutation": "npx stryker run",
+    "verify": "npm run lint && npm run typecheck && npm test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.43.0",
+    "@types/node": "^20.11.30",
+    "dotenv": "^16.4.5",
+    "cross-env": "^7.0.3",
+    "zod": "^3.22.4",
+    "@typescript-eslint/eslint-plugin": "^7.2.0",
+    "@typescript-eslint/parser": "^7.2.0",
+    "eslint": "^8.57.0",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.2.5",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.5.4",
+    "@stryker-mutator/core": "^9.6.0",
+    "@pact-foundation/pact": "^16.2.0"
+  },
+  "lint-staged": {
+    "*.{ts,js}": [
+      "eslint --fix"
+    ],
+    "*.{md,json,yml,yaml}": [
+      "prettier --write"
+    ]
+  }
+}

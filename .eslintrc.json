@@ -1,0 +1,16 @@
+{
+  "root": true,
+  "env": {
+    "es2022": true,
+    "node": true
+  },
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+  "ignorePatterns": ["node_modules/", "test-results/", "playwright-report/", "dist/"],
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "off",
+    "no-empty": "off",
+    "no-constant-condition": "off"
+  }
+}

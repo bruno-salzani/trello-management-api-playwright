@@ -1,0 +1,49 @@
+name: PR Fast Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+concurrency:
+  group: pr-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fast:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Smoke (Boards)
+        run: npm run test:smoke:boards
+        env:
+          TRELLO_KEY: ${{ secrets.TRELLO_KEY }}
+          TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
+      - name: Analyze Flaky (smoke)
+        if: always()
+        run: npm run flaky:analyze
+        env:
+          FAIL_ON_FLAKY: ${{ vars.FAIL_ON_FLAKY || '0' }}
+      - name: Upload flaky log (smoke)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flaky-pr
+          path: test-results/flaky.jsonl
+          if-no-files-found: ignore

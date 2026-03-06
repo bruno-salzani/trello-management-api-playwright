@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.idea/
+.vscode/
+.DS_Store
+.env
+playwright-report/
+test-results/
+.stryker-tmp/

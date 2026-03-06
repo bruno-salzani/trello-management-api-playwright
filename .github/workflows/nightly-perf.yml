@@ -1,0 +1,72 @@
+name: Nightly Perf
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  perf:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run perf tests
+        run: npm run test:perf
+        env:
+          TRELLO_KEY: ${{ secrets.TRELLO_KEY }}
+          TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
+          ENABLE_PERF: 1
+          PERF_WORKERS: ${{ vars.PERF_WORKERS || '3' }}
+          PERF_REPEAT: ${{ vars.PERF_REPEAT || '5' }}
+
+      - name: Upload junit.xml (perf)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-perf-nightly
+          path: test-results/junit.xml
+          if-no-files-found: ignore
+
+      - name: Upload metrics (perf)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: metrics-perf-nightly
+          path: |
+            test-results/metrics.jsonl
+            test-results/metrics-summary.json
+          if-no-files-found: ignore
+      - name: Export metrics CSV (perf)
+        if: always()
+        run: npm run metrics:export
+      - name: Push metrics to InfluxDB (perf)
+        if: ${{ always() && secrets.INFLUX_URL != '' && secrets.INFLUX_TOKEN != '' && secrets.INFLUX_ORG != '' && secrets.INFLUX_BUCKET != '' }}
+        run: npm run metrics:push
+        env:
+          INFLUX_URL: ${{ secrets.INFLUX_URL }}
+          INFLUX_TOKEN: ${{ secrets.INFLUX_TOKEN }}
+          INFLUX_ORG: ${{ secrets.INFLUX_ORG }}
+          INFLUX_BUCKET: ${{ secrets.INFLUX_BUCKET }}
+      - name: Analyze Flaky (perf)
+        if: always()
+        run: npm run flaky:analyze
+        env:
+          FAIL_ON_FLAKY: ${{ vars.FAIL_ON_FLAKY || '0' }}
+      - name: Upload flaky log (perf)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flaky-perf-nightly
+          path: test-results/flaky.jsonl
+          if-no-files-found: ignore
