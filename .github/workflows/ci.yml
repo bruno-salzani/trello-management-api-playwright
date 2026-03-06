@@ -51,7 +51,7 @@ jobs:
 
       - name: Upload junit.xml
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: junit-${{ matrix.os }}
           path: test-results/junit.xml
@@ -60,7 +60,7 @@ jobs:
 
       - name: Upload metrics
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: metrics-${{ matrix.os }}
           path: |
@@ -71,7 +71,7 @@ jobs:
 
       - name: Upload Playwright report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-report-${{ matrix.os }}
           path: playwright-report
@@ -84,7 +84,7 @@ jobs:
           FAIL_ON_FLAKY: ${{ vars.FAIL_ON_FLAKY || '0' }}
       - name: Upload flaky log
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: flaky-${{ matrix.os }}
           path: test-results/flaky.jsonl
@@ -137,7 +137,7 @@ jobs:
 
       - name: Upload junit.xml (perf)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: junit-perf
           path: test-results/junit.xml
@@ -146,7 +146,7 @@ jobs:
 
       - name: Upload metrics (perf)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: metrics-perf
           path: |
