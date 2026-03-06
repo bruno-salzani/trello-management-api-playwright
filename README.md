@@ -3,12 +3,8 @@
 ![Status](https://img.shields.io/badge/Status-Ativo-brightgreen)
 ![Framework](https://img.shields.io/badge/Framework-Playwright-blueviolet)
 ![Stack](https://img.shields.io/badge/Stack-Node.js%20%7C%20TypeScript-blue)
-[![CI](https://github.com/brunosalzani/trello-management-api-playwright/actions/workflows/ci.yml/badge.svg)](https://github.com/brunosalzani/trello-management-api-playwright/actions/workflows/ci.yml)
-[![Nightly Perf](https://github.com/brunosalzani/trello-management-api-playwright/actions/workflows/nightly-perf.yml/badge.svg)](https://github.com/brunosalzani/trello-management-api-playwright/actions/workflows/nightly-perf.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-20.x-339933?logo=node.js)](#)
-[![Mutation](https://raw.githubusercontent.com/brunosalzani/trello-management-api-playwright/main/assets/badges/mutation.svg)](https://github.com/brunosalzani/trello-management-api-playwright/actions/workflows/mutation.yml)
-[![PR Fast Checks](https://github.com/brunosalzani/trello-management-api-playwright/actions/workflows/pr.yml/badge.svg)](https://github.com/brunosalzani/trello-management-api-playwright/actions/workflows/pr.yml)
 
 Criado por: Bruno Salzani
 
