@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.43.0",
-    "@types/node": "^20.11.30",
+    "@types/node": "^25.3.5",
     "dotenv": "^16.4.5",
     "cross-env": "^7.0.3",
     "zod": "^3.22.4",
